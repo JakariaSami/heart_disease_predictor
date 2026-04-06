@@ -11,7 +11,7 @@ from imblearn.pipeline import Pipeline as ImbPipeline
 import joblib
 import os
 
-from data import load_data, build_preprocessor, get_processed_data
+from data import load_data, build_preprocessor, get_processed_data, CONTINUOUS_FEATURES, CATEGORICAL_FEATURES
 
 def evaluate(model, X_test, y_test):
   y_pred = model.predict(X_test)
@@ -55,6 +55,30 @@ def train_model(model_name, classifier, X_train, X_test, y_train, y_test, use_sm
     return pipeline, metrics
 
 
+def save_final_model(pipeline, metrics, model_name): 
+    import json
+
+    # Always resolves to project_root/models/ no matter where it's ran from
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    models_dir = os.path.join(base_dir, "models")
+    os.makedirs(models_dir, exist_ok=True)
+
+    joblib.dump(pipeline, os.path.join(models_dir, "best_model.pkl"))
+
+    metadata = {
+        "model_name": model_name,
+        "metrics": metrics, 
+        "features": {
+            "continuous": CONTINUOUS_FEATURES,
+            "categorical": CATEGORICAL_FEATURES
+        }
+    }
+    with open(os.path.join(models_dir, "model_metadata.json"), "w") as f:
+        json.dump(metadata, f, indent=2)
+
+    print("Model and metadata saved to models/")
+
+
 def run_experiments():
     X_train, X_test, y_train, y_test = get_processed_data()
 
@@ -84,13 +108,9 @@ def run_experiments():
             best_pipeline = pipeline
             best_name = name
 
-    print(f"\n Best model: {best_name} (ROC-AUC: {best_auc:.4f})")
+    print(f"\nBest model: {best_name} (ROC-AUC: {best_auc:.4f})")
 
-    # Saving the best model
-    os.makedirs("models", exist_ok=True)
-    joblib.dump(best_pipeline, "models/best_model.pkl")
-    print(" Saved to models/best_model.pkl")
-
+    save_final_model(best_pipeline, results[best_name], best_name)
     return results
 
 
