@@ -76,6 +76,11 @@ def save_final_model(pipeline, metrics, model_name):
     with open(os.path.join(models_dir, "model_metadata.json"), "w") as f:
         json.dump(metadata, f, indent=2)
 
+    # Save transformed training data for SHAP background
+    X_train, _, y_train, _ = get_processed_data()
+    X_train_transformed = pipeline.named_steps['preprocessor'].transform(X_train)
+    np.save(os.path.join(models_dir, "X_train_transformed.npy"), X_train_transformed)
+    
     print("Model and metadata saved to models/")
 
 
