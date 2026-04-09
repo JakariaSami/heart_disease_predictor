@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import matplotlib.pyplot as plt
+import os
 
 st.markdown("""
 <style>
@@ -10,7 +11,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-API_URL = "http://localhost:8000/predict"
+API_URL = os.getenv("API_URL", "https://jakariasami-heart-disease-predictor.hf.space/predict")
 
 st.set_page_config(
     page_title="Heart Disease Predictor",
