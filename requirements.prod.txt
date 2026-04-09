@@ -10,3 +10,5 @@ shap
 joblib
 ucimlrepo
 mlflow
+pytest
+httpx
