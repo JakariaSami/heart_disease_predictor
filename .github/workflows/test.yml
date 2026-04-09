@@ -21,5 +21,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.prod.txt
 
+      - name: Train model
+        run: python src/train.py
+
       - name: Run tests
         run: pytest tests/ -v
