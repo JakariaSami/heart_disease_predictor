@@ -7,8 +7,12 @@ RUN pip install --no-cache-dir -r requirements.prod.txt
 
 COPY src/ ./src/
 COPY api/ ./api/
-COPY models/ ./models/
+
+RUN mkdir -p models
+
+COPY startup.sh .
+RUN chmod +x startup.sh
 
 ENV PYTHONPATH=/app
 
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./startup.sh"]
