@@ -1,26 +1,23 @@
 import numpy as np
+import pandas as pd
 from ucimlrepo import fetch_ucirepo
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
-
+import os
 
 # Feature definitions
 CONTINUOUS_FEATURES = ['age', 'trestbps', 'chol', 'thalach', 'oldpeak']
 CATEGORICAL_FEATURES = ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'ca', 'thal']
 
 def load_data():
-  heart = fetch_ucirepo(id=45)
-  X = heart.data.features.copy()
-  y = heart.data.targets.values.ravel()
-  y = (y > 0).astype(int)
-
-  X['ca'] = X['ca'].replace('0', np.nan)
-  X['thal'] = X['thal'].replace('0', np.nan)
-
-  return X, y
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    X = pd.read_csv(os.path.join(base_dir, "data/raw/features.csv"))
+    y = pd.read_csv(os.path.join(base_dir, "data/raw/targets.csv")).values.ravel()
+    y = (y > 0).astype(int)
+    return X, y
 
 def build_preprocessor(): 
   continuous_pipeline = Pipeline([
